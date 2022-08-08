@@ -8,13 +8,13 @@ builds:
     main: ./scalingo
     goos:
       - linux
-      - windows
-      - darwin
-      - freebsd
-      - openbsd
+      # - windows
+      # - darwin
+      # - freebsd
+      # - openbsd
     goarch:
-      - amd64
-      - arm64
+      # - amd64
+      # - arm64
       - 386
     ignore:
       - goos: darwin
