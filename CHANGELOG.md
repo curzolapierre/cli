@@ -2,6 +2,8 @@
 
 ### To be Released
 
+### 1.31.1
+
 ### 1.31.0
 
 * fix(autocomplete): do not show update message on autocomplete ([PR#1044](https://github.com/Scalingo/cli/pull/1044))
