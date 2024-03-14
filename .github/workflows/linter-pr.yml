@@ -1,0 +1,21 @@
+name: Test only on PR
+
+on: [pull_request, push]
+jobs:
+  logs:
+    name: print some variables to debug
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Print some variables
+        run: |
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "github event name: ${{ github.event_name }}"
+          echo "github ref: ${{ github.ref }}"
+          echo "github base ref: ${{ github.base_ref }}"
+          echo "github head ref: ${{ github.head_ref }}"
+          echo "github event path: ${{ github.event_path }}"
+          echo "github event number: ${{ github.event.number }}"
+          echo "github event pull request number: ${{ github.event.pull_request.number }}"
+          echo "github event pull request head ref: ${{ github.event.pull_request.head.ref }}"
+          echo "github event pull request base sha: ${{ github.event.pull_request.base.sha }}"
+

@@ -8,10 +8,27 @@ permissions:
   pull-requests: read
 
 jobs:
+  logs:
+    name: print some variables to debug
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Print some variables
+        run: |
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "github event name: ${{ github.event_name }}"
+          echo "github ref: ${{ github.ref }}"
+          echo "github base ref: ${{ github.base_ref }}"
+          echo "github head ref: ${{ github.head_ref }}"
+          echo "github event path: ${{ github.event_path }}"
+          echo "github event number: ${{ github.event.number }}"
+          echo "github event pull request number: ${{ github.event.pull_request.number }}"
+          echo "github event pull request head ref: ${{ github.event.pull_request.head.ref }}"
+          echo "github event pull request base sha: ${{ github.event.pull_request.base.sha }}"
+
   linter-pull-request:
     name: golangci-lint on a PR
     runs-on: ubuntu-22.04
-    if: github.ref != 'refs/heads/master'
+    if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,9 +52,9 @@ jobs:
           args: "--config=$(pwd)/.golangci.yml --new-from-rev=${{ steps.new-from-rev.outputs.NEW_FROM_REV }}"
 
   linter-master:
-    name: golangci-lint on master branch
+    name: golangci-lint on master branch or on a tag
     runs-on: ubuntu-22.04
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: actions/checkout@v4
         with:
