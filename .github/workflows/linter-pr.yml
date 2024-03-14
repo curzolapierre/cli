@@ -1,9 +1,9 @@
 name: Test only on PR
 
-on: [pull_request, push]
+on: [pull_request]
 jobs:
   logs:
-    name: print some variables to debug
+    name: print some variables to debug linter-pr.yml
     runs-on: ubuntu-22.04
     steps:
       - name: Print some variables
@@ -19,3 +19,27 @@ jobs:
           echo "github event pull request head ref: ${{ github.event.pull_request.head.ref }}"
           echo "github event pull request base sha: ${{ github.event.pull_request.base.sha }}"
 
+  linter-pull-request:
+    name: golangci-lint on a PR
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # We need to define the fetch-depth to 0 so that we can get the commit ID of the master branch
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+          check-latest: true
+      - name: Get golangci-lint configuration file
+        run: wget --output-document=$(pwd)/.golangci.yml https://sc-devtools.s3.eu-west-1.amazonaws.com/golang-ci/golangci.yml
+      - name: Get master branch commit ID
+        id: new-from-rev
+        run: echo "NEW_FROM_REV=$( git rev-parse origin/master )" >> "$GITHUB_OUTPUT"
+      - name: "Execute golangci-lint on a pull request"
+        uses: golangci/golangci-lint-action@v4
+        with:
+          # The `only-new-issues` flag is not working (https://github.com/golangci/golangci-lint-action/issues/531).
+          # We rather decided to use the suggestion from the FAQ (https://golangci-lint.run/usage/faq/#how-to-integrate-golangci-lint-into-large-project-with-thousands-of-issues) and use `--new-from-rev`
+          # only-new-issues: false
+          args: "--config=$(pwd)/.golangci.yml --new-from-rev=${{ steps.new-from-rev.outputs.NEW_FROM_REV }}"
